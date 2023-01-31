@@ -5,6 +5,7 @@ from time import sleep # time chrage
 from selenium import webdriver # google chrome controller
 from selenium.webdriver.common.by import By # search
 from selenium.webdriver.common.keys import Keys # login
+from re import sub
 
 def getUsers(number: int) -> list:
     CLASS_ELEMENTS = "_ab8w  _ab94 _ab97 _ab9f _ab9k _ab9p  _ab9- _aba8 _abcm"
@@ -23,12 +24,17 @@ def getUsers(number: int) -> list:
             time = 0
     return users
 
+def getNumber(users: str) -> int:
+    e = driver.find_element(By.CSS_SELECTOR, f"a[href='/{USER}/{users}/']")
+    num = e.text
+    num = sub("[^0-9]", "", num)
+    return int(num)
+
 # Data
 load_dotenv()
 INSTAGRAM_USER = os.getenv("INSTAGRAM_USER")
 INSTAGRAM_PASSWORD = os.getenv("INSTAGRAM_PASSWORD")
 PATH = os.getenv("PATH_CHROME_DRIVER")
-print(PATH)
 USER = input("User: ")
 
 # Init Google Chrome
@@ -39,7 +45,7 @@ driver.get("https://www.instagram.com/")
 ssl._create_default_https_context = ssl._create_unverified_context
 
 # login
-sleep(5) # loading
+sleep(4) # loading
 username = driver.find_element("css selector", "input[name='username']")
 password = driver.find_element("css selector", "input[name='password']")
 username.clear()
@@ -54,10 +60,7 @@ driver.get(f"https://www.instagram.com/{USER}/followers")
 
 # Get followers
 sleep(4) # loading
-number_followers = driver.find_element(By.CSS_SELECTOR, f"a[href='/{USER}/followers/']")
-number_followers = number_followers.find_element(By.CSS_SELECTOR, "span")
-number_followers = number_followers.find_element(By.CSS_SELECTOR, "span")
-number_followers = int(number_followers.text)
+number_followers = getNumber("followers")
 print("Followers: ", number_followers)
 followers = getUsers(number_followers)
 
@@ -67,10 +70,7 @@ driver.get(f"https://www.instagram.com/{USER}/following")
 
 # Get followings
 sleep(4) # loading
-number_following = driver.find_element(By.CSS_SELECTOR, f"a[href='/{USER}/following/']")
-number_following = number_following.find_element(By.CSS_SELECTOR, "span")
-number_following = number_following.find_element(By.CSS_SELECTOR, "span")
-number_following = int(number_following.text)
+number_following = getNumber("following")
 print("Following: ", number_following)
 following = getUsers(number_following)
 
