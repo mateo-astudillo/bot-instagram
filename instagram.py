@@ -10,18 +10,23 @@ from re import sub
 def getUsers(number: int) -> list:
     CLASS_ELEMENTS = "_ab8w  _ab94 _ab97 _ab9f _ab9k _ab9p  _ab9- _aba8 _abcm"
     CLASS_USER = " _ab8y  _ab94 _ab97 _ab9f _ab9k _ab9p _abcm"
+
+    n = 0
+    n_prev = 0
+    elements = []
+    while n != number:
+        if n == n_prev:
+            elements = driver.find_elements(By.CSS_SELECTOR, f"div[class='{CLASS_ELEMENTS}'")
+            n = len(elements)
+            sleep(0.2)
+        else:
+            n_prev = n
+            driver.execute_script("arguments[0].scrollIntoView()", elements[n - 1])
+            sleep(1)
     users = []
-    time = 0.2
-    for i in range( number ):
-        sleep(time)
-        elements = driver.find_elements(By.CSS_SELECTOR, f"div[class='{CLASS_ELEMENTS}'")
-        e = elements[i].find_element(By.CSS_SELECTOR, f"div[class='{CLASS_USER}']")
-        n_els = len(elements)
+    elements = driver.find_elements(By.CSS_SELECTOR, f"div[class='{CLASS_USER}']")
+    for e in elements:
         users.append(e.text)
-        print(e.text)
-        driver.execute_script("arguments[0].scrollIntoView()", elements[n_els - 1])
-        if n_els == number:
-            time = 0
     return users
 
 def getNumber(users: str) -> int:
